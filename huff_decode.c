@@ -5,9 +5,29 @@
 #include "bfile.h"
 
 void Decoder(FILE *fichier_encode, Arbre ArbreHuffman) {
-        AfficherArbre(ArbreHuffman);
-    /* A COMPLETER */
-    printf("Programme non realise (Decoder)\n");
+    //AfficherArbre(ArbreHuffman);
+
+	BFILE *bfic = bstart(fichier_encode, "r");
+	Arbre actuel = ArbreHuffman;
+	while (!beof(bfic)) {
+		int code = bitread(bfic);
+    if (code == -1) {
+			break;
+		}
+		if (code == 0) {
+			actuel = FilsGauche(actuel);
+		} else {
+			actuel = FilsDroit(actuel);
+		}
+
+		if (EstVide(FilsGauche(actuel)) || EstVide(FilsDroit(actuel))) {
+			printf("%c", Etiq(actuel));
+			actuel = ArbreHuffman;
+		}
+	} 
+	printf("\n");
+	bstop(bfic);
+  	LibererArbre(ArbreHuffman);
 }
 
 int main(int argc, char *argv[]) {

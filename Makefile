@@ -20,6 +20,9 @@ huff_encode.o: huff_encode.c fap.h arbrebin.h bfile.h huffman_code.h
 clean:
 	rm -f huff_encode huff_decode $(patsubst %.c,%.o,$(wildcard *.c))
 
+%.pdf: %.md
+	pandoc $^ -o $@
+
 # Réindentation de tout le code source avec un style courant
 .PHONY: reindent
 reindent:

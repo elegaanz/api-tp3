@@ -1,4 +1,5 @@
 
+
 #include "arbrebin.h"
 #include "bfile.h"
 #include "fap.h"
@@ -13,6 +14,8 @@ typedef struct {
 struct code_char HuffmanCode[256];
 
 void ConstruireTableOcc(FILE *fichier, TableOcc_t *TableOcc) {
+	for (int i = 0; i < 256; i++) TableOcc->tab[i] = 0;
+
     int c;
 
     c = fgetc(fichier);
@@ -34,36 +37,59 @@ fap InitHuffman(TableOcc_t *TableOcc) {
     fap huff = creer_fap_vide();
     for (int i = 0; i < 256; i++) {
         Arbre arbre = NouveauNoeud(ArbreVide(), i, ArbreVide());
-        inserer(huff, arbre, TableOcc->tab[i]);
+        huff = inserer(huff, arbre, TableOcc->tab[i]);
     }
     return huff;
 }
 
 Arbre ConstruireArbre(fap file) {
     Arbre dernier;
-    while (!est_fap_vide(file)) {
+    for (int i = 0; i < 255; i++) {
         Arbre g, d;
         int pg, pd;
-        extraire(file, &g, &pg);
-        extraire(file, &d, &pd);
+        file = extraire(file, &g, &pg);
+        file = extraire(file, &d, &pd);
         Arbre noeud = NouveauNoeud(g, '\0', d);
-        inserer(file, noeud, pd + pg);
-        dernier = noeud;
+        file = inserer(file, noeud, pd + pg);
     }
+	int x;
+	extraire(file, &dernier, &x);
     return dernier;
 }
 
-void explorer(Arbre huff) {
-    
+void explorer(Arbre huff, int lg, int *code) {
+    if (EstVide(FilsGauche(huff)) || EstVide(FilsDroit(huff))) {
+		unsigned char ch = Etiq(huff);
+		HuffmanCode[(int)ch].lg = lg;
+		for (int i = 0; i < lg; i++) {
+			HuffmanCode[(unsigned int)ch].code[i] = code[i];
+		}
+	} else {
+		code[lg] = 0;
+		explorer(FilsGauche(huff), lg + 1, code);
+		code[lg] = 1;
+		explorer(FilsDroit(huff), lg + 1, code);
+	}
 }
 
 void ConstruireCode(Arbre huff) {
-    explorer(huff);
+	  int code[32];
+    explorer(huff, 0, &*code);
 }
 
 void Encoder(FILE *fic_in, FILE *fic_out, Arbre ArbreHuffman) {
-    /* A COMPLETER */
-    printf("Programme non realise (Encoder)\n");
+    EcrireArbre(fic_out, ArbreHuffman);
+	BFILE *bfic_out = bstart(fic_out, "w");
+	while (!feof(fic_in)) {
+		unsigned char c;
+		fscanf(fic_in, "%c", &c);
+		struct code_char *code = &HuffmanCode[(unsigned int)c];
+		for (int i = 0; i < code->lg; i++) {
+			bitwrite(bfic_out, code->code[i]);
+		}
+	} 
+	bstop(bfic_out);
+	LibererArbre(ArbreHuffman);
 }
 
 int main(int argc, char *argv[]) {
@@ -82,8 +108,6 @@ int main(int argc, char *argv[]) {
 
     /* Construire l'arbre d'Huffman */
     Arbre ArbreHuffman = ConstruireArbre(file);
-
-        AfficherArbre(ArbreHuffman);
 
     /* Construire la table de codage */
     ConstruireCode(ArbreHuffman);

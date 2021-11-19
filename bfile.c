@@ -51,27 +51,34 @@ int bitread(BFILE *fichier) {
     if ((fichier->nombre == 0) && !beof(fichier)) {
         fichier->last = 1;
         resultat = fgetc(fichier->fichier);
-        if (resultat == EOF)
-            return -1;
+        if (resultat == EOF){
+                      return -1;
+                      printf("fin du fichier");
+        }
+
         /* Decodage du protocole de trames */
         if (resultat == DELIMITEUR) {
             resultat = fgetc(fichier->fichier);
-            if (resultat == EOF)
+            if (resultat == EOF) { printf("ca devrait pas arriver");
                 /* Bug, ceci ne devrait pas arriver */
                 return -1;
+			}
             if (resultat == DELIMITEUR) {
                 fichier->nombre = 8;
             } else {
                 resultat -= '0';
-                if ((resultat < 1) || (resultat > 8))
+                if ((resultat < 1) || (resultat > 8))  {
+                   printf("resultat (= %d) > 8", resultat);
                     /* Bug si resultat > 8 */
                     return -1;
+                }
                 int nombre;
                 nombre = resultat;
                 resultat = fgetc(fichier->fichier);
-                if (resultat == EOF)
+                if (resultat == EOF) { printf("ne devrait pas arriver (bis)");
                     /* Bug, ne devrait pas arriver */
                     return -1;
+				}
                 fichier->nombre = nombre;
             }
         } else {

@@ -198,7 +198,7 @@ void AfficherArbreRec(Arbre a, int indent) {
         for (i = 0; i < indent; i++) {
             printf(" ");
         }
-        printf("%c\n", Etiq(a));
+        printf("%d\n", Etiq(a));
         AfficherArbreRec(FilsGauche(a), indent + 2);
         AfficherArbreRec(FilsDroit(a), indent + 2);
     }
