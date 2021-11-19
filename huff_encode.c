@@ -13,15 +13,11 @@ typedef struct {
 struct code_char HuffmanCode[256];
 
 void ConstruireTableOcc(FILE *fichier, TableOcc_t *TableOcc) {
-
     int c;
-
-    /* A COMPLETER ... */
-    printf("Programme non realise (ConstruireTableOcc)\n");
 
     c = fgetc(fichier);
     while (c != EOF) {
-        /* A COMPLETER ... */
+        TableOcc->tab[c] += 1;
         c = fgetc(fichier);
     };
 
@@ -35,21 +31,34 @@ void ConstruireTableOcc(FILE *fichier, TableOcc_t *TableOcc) {
 }
 
 fap InitHuffman(TableOcc_t *TableOcc) {
-    /* A COMPLETER */
-    printf("Programme non realise (InitHuffman)\n");
-    return NULL;
+    fap huff = creer_fap_vide();
+    for (int i = 0; i < 256; i++) {
+        Arbre arbre = NouveauNoeud(ArbreVide(), i, ArbreVide());
+        inserer(huff, arbre, TableOcc->tab[i]);
+    }
+    return huff;
 }
 
 Arbre ConstruireArbre(fap file) {
-    /* A COMPLETER */
-    printf("Programme non realise (ConstruireArbre)\n");
-    return ArbreVide();
+    Arbre dernier;
+    while (!est_fap_vide(file)) {
+        Arbre g, d;
+        int pg, pd;
+        extraire(file, &g, &pg);
+        extraire(file, &d, &pd);
+        Arbre noeud = NouveauNoeud(g, '\0', d);
+        inserer(file, noeud, pd + pg);
+        dernier = noeud;
+    }
+    return dernier;
 }
 
+void explorer(Arbre huff) {
+    
+}
 
 void ConstruireCode(Arbre huff) {
-    /* A COMPLETER */
-    printf("Programme non realise (ConstruireCode)\n");
+    explorer(huff);
 }
 
 void Encoder(FILE *fic_in, FILE *fic_out, Arbre ArbreHuffman) {
