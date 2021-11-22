@@ -11,9 +11,6 @@ void Decoder(FILE *fichier_encode, Arbre ArbreHuffman) {
 	Arbre actuel = ArbreHuffman;
 	while (!beof(bfic)) {
 		int code = bitread(bfic);
-    if (code == -1) {
-			break;
-		}
 		if (code == 0) {
 			actuel = FilsGauche(actuel);
 		} else {
@@ -27,7 +24,7 @@ void Decoder(FILE *fichier_encode, Arbre ArbreHuffman) {
 	} 
 	printf("\n");
 	bstop(bfic);
-  	LibererArbre(ArbreHuffman);
+  LibererArbre(ArbreHuffman);
 }
 
 int main(int argc, char *argv[]) {

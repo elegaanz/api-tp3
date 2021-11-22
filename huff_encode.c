@@ -16,49 +16,49 @@ struct code_char HuffmanCode[256];
 void ConstruireTableOcc(FILE *fichier, TableOcc_t *TableOcc) {
 	for (int i = 0; i < 256; i++) TableOcc->tab[i] = 0;
 
-    int c;
+  int c;
 
-    c = fgetc(fichier);
-    while (c != EOF) {
-        TableOcc->tab[c] += 1;
-        c = fgetc(fichier);
-    };
+  c = fgetc(fichier);
+  while (c != EOF) {
+      TableOcc->tab[c] += 1;
+      c = fgetc(fichier);
+  };
 
 
-    int i;
-    for (i = 0; i < 256; i++) {
-        if (TableOcc->tab[i] != 0)
-            printf("Occurences du caractere %c (code %d) : %d\n", i, i,
+  int i;
+  for (i = 0; i < 256; i++) {
+      if (TableOcc->tab[i] != 0)
+        printf("Occurences du caractere %c (code %d) : %d\n", i, i,
                    TableOcc->tab[i]);
-    }
+  }
 }
 
 fap InitHuffman(TableOcc_t *TableOcc) {
-    fap huff = creer_fap_vide();
-    for (int i = 0; i < 256; i++) {
-        Arbre arbre = NouveauNoeud(ArbreVide(), i, ArbreVide());
-        huff = inserer(huff, arbre, TableOcc->tab[i]);
-    }
-    return huff;
+  fap huff = creer_fap_vide();
+  for (int i = 0; i < 256; i++) {
+      Arbre arbre = NouveauNoeud(ArbreVide(), i, ArbreVide());
+      huff = inserer(huff, arbre, TableOcc->tab[i]);
+  }
+  return huff;
 }
 
 Arbre ConstruireArbre(fap file) {
-    Arbre dernier;
-    for (int i = 0; i < 255; i++) {
-        Arbre g, d;
-        int pg, pd;
-        file = extraire(file, &g, &pg);
-        file = extraire(file, &d, &pd);
-        Arbre noeud = NouveauNoeud(g, '\0', d);
-        file = inserer(file, noeud, pd + pg);
-    }
+  Arbre dernier;
+  for (int i = 0; i < 255; i++) {
+      Arbre g, d;
+      int pg, pd;
+      file = extraire(file, &g, &pg);
+      file = extraire(file, &d, &pd);
+      Arbre noeud = NouveauNoeud(g, '\0', d);
+      file = inserer(file, noeud, pd + pg);
+  }
 	int x;
-	extraire(file, &dernier, &x);
-    return dernier;
+  extraire(file, &dernier, &x);
+  return dernier;
 }
 
 void explorer(Arbre huff, int lg, int *code) {
-    if (EstVide(FilsGauche(huff)) || EstVide(FilsDroit(huff))) {
+  if (EstVide(FilsGauche(huff)) || EstVide(FilsDroit(huff))) {
 		unsigned char ch = Etiq(huff);
 		HuffmanCode[(int)ch].lg = lg;
 		for (int i = 0; i < lg; i++) {
@@ -73,12 +73,12 @@ void explorer(Arbre huff, int lg, int *code) {
 }
 
 void ConstruireCode(Arbre huff) {
-	  int code[32];
-    explorer(huff, 0, &*code);
+	int code[32];
+  explorer(huff, 0, &*code);
 }
 
 void Encoder(FILE *fic_in, FILE *fic_out, Arbre ArbreHuffman) {
-    EcrireArbre(fic_out, ArbreHuffman);
+  EcrireArbre(fic_out, ArbreHuffman);
 	BFILE *bfic_out = bstart(fic_out, "w");
 	while (!feof(fic_in)) {
 		unsigned char c;

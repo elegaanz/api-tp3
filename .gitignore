@@ -1,0 +1,4 @@
+*.enc
+*.o
+huff_encode
+huff_decode
